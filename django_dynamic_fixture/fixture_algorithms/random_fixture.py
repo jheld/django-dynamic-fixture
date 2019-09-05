@@ -4,8 +4,6 @@ from decimal import Decimal
 import random
 import string
 
-import six
-
 from django.core.exceptions import ImproperlyConfigured
 
 try:
@@ -27,7 +25,7 @@ from django_dynamic_fixture.fixture_algorithms.default_fixture import BaseDataFi
 
 class RandomDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFixtureMixin):
     def random_string(self, n):
-        return six.text_type('').join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
+        return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
 
     # NUMBERS
     def integerfield_config(self, field, key, start=1, end=10 ** 6):
@@ -72,7 +70,7 @@ class RandomDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFixtureM
         return self.charfield_config(field, key)
 
     def commaseparatedintegerfield_config(self, field, key):
-        return six.text_type(random.randint(1, field.max_length)) #FIXME:
+        return str(random.randint(1, field.max_length)) #FIXME:
 
     # BOOLEAN
     def booleanfield_config(self, field, key):
@@ -94,10 +92,10 @@ class RandomDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFixtureM
 
     # FORMATTED STRINGS
     def emailfield_config(self, field, key):
-        return six.text_type('a%s@dynamicfixture.com') % self.random_string(10)
+        return 'a%s@dynamicfixture.com' % self.random_string(10)
 
     def urlfield_config(self, field, key):
-        return six.text_type('http://dynamicfixture%s.com') % self.random_string(10)
+        return 'http://dynamicfixture%s.com' % self.random_string(10)
 
     # Deprecated in Django >= 1.7
     def ipaddressfield_config(self, field, key):
@@ -105,10 +103,10 @@ class RandomDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFixtureM
         b = random.randint(1, 255)
         c = random.randint(1, 255)
         d = random.randint(1, 255)
-        return six.text_type('%s.%s.%s.%s') % (a, b, c, d)
+        return '%s.%s.%s.%s' % (a, b, c, d)
 
     def xmlfield_config(self, field, key):
-        return six.text_type('<a>%s</a>') % self.random_string(5)
+        return '<a>%s</a>' % self.random_string(5)
 
     # FILES
     def filepathfield_config(self, field, key):

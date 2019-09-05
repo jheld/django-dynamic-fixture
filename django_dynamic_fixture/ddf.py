@@ -4,7 +4,6 @@ import inspect
 import logging
 import re
 import sys
-import six
 
 from django.core.files import File
 from django.db.models import Field
@@ -164,7 +163,7 @@ class Copier(object):
                 current_instance = getattr(current_instance, field)
             return current_instance
         except Exception as e:
-            six.reraise(InvalidCopierExpressionError, InvalidCopierExpressionError(self.expression, e), sys.exc_info()[2])
+            raise InvalidCopierExpressionError(self.expression, e)
 
 
 class DDFLibrary(object):
@@ -253,7 +252,7 @@ class DynamicFixture(object):
         self.fields_to_disable_auto_now_add = []
 
     def __str__(self):
-        return 'F(%s)' % (', '.join(six.text_type('%s=%s') % (key, value) for key, value in self.kwargs.items()))
+        return 'F(%s)' % (', '.join('%s=%s' % (key, value) for key, value in self.kwargs.items()))
 
     def __eq__(self, that):
         return self.kwargs == that.kwargs
@@ -366,7 +365,7 @@ class DynamicFixture(object):
             except PendingField:
                 return # ignore this field for a while.
             except Exception as e:
-                six.reraise(InvalidConfigurationError, InvalidConfigurationError(get_unique_field_name(__field), e), sys.exc_info()[2])
+                raise InvalidConfigurationError(get_unique_field_name(__field), e)
         else:
             data = self._process_field_with_default_fixture(__field, model_class, persist_dependencies)
 
@@ -398,7 +397,7 @@ class DynamicFixture(object):
                     field_value = data.id if isinstance(e, AttributeError) else data
                     setattr(__instance, "%s_id" % __field.name, field_value) # Model.field = data
                 else:
-                    six.reraise(*sys.exc_info())
+                    raise e
         self.fields_processed.append(__field.name)
 
     def _validate_kwargs(self, model_class, kwargs):
@@ -438,7 +437,7 @@ class DynamicFixture(object):
                 except ImportError:
                     pass # ignoring if module does not exist
                 except Exception as e:
-                    six.reraise(InvalidDDFSetupError, InvalidDDFSetupError(e), sys.exc_info()[2])
+                    raise InvalidDDFSetupError(e)
             configuration_default = library.get_configuration(model_class, name=DDFLibrary.DEFAULT_KEY)
             configuration_custom = library.get_configuration(model_class, name=named_shelve)
             configuration = {}
@@ -574,17 +573,17 @@ class DynamicFixture(object):
                 try:
                     _PRE_SAVE[model_class](instance)
                 except Exception as e:
-                    six.reraise(InvalidReceiverError, InvalidReceiverError(e), sys.exc_info()[2])
+                    raise InvalidReceiverError(e)
             self._save_the_instance(instance)
             if model_class in _POST_SAVE:
                 try:
                     _POST_SAVE[model_class](instance)
                 except Exception as e:
-                    six.reraise(InvalidReceiverError, InvalidReceiverError(e), sys.exc_info()[2])
+                    raise InvalidReceiverError(e)
         except Exception as e:
             if self.print_errors:
                 print_field_values(instance)
-            six.reraise(BadDataError, BadDataError(get_unique_model_name(model_class), e), sys.exc_info()[2])
+            raise BadDataError(get_unique_model_name(model_class), e)
         self.fields_processed = [] # TODO: need more tests for M2M and Copier
         self.pending_fields = []
         for field in get_many_to_many_fields_from_model(model_class):
@@ -594,7 +593,7 @@ class DynamicFixture(object):
                 try:
                     self._process_many_to_many_field(field, manytomany_field, fixture, instance)
                 except InvalidManyToManyConfigurationError as e:
-                    six.reraise(InvalidManyToManyConfigurationError, e, sys.exc_info()[2])
+                    raise e
                 except Exception as e:
-                    six.reraise(InvalidManyToManyConfigurationError, InvalidManyToManyConfigurationError(get_unique_field_name(field), e), sys.exc_info()[2])
+                    raise InvalidManyToManyConfigurationError(get_unique_field_name(field), e)
         return instance

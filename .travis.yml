@@ -3,8 +3,8 @@ sudo: true
 
 language: python
 python:
-  - 2.7
   - 3.6
+  - 3.7
 
 install:
   - pip install tox
@@ -12,17 +12,8 @@ install:
   #- pip install python-coveralls
 
 env:
-  - DJANGO=django18
-  - DJANGO=django19
-  - DJANGO=django110
-  - DJANGO=django111
-  # - DJANGO=django20
-
-# Workaround for Travis issues with unknown python interpreters
-matrix:
-  exclude:
-    - python: 2.7
-      env: DJANGO=django20
+  - DJANGO=django21
+  - DJANGO=django22 # long-term support release
 
 script:
   - tox -e $DJANGO-py${TRAVIS_PYTHON_VERSION//[.]/}

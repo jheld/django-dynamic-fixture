@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from importlib import reload as reload_module
 
 from django import conf
 
@@ -8,7 +9,6 @@ from django_dynamic_fixture import global_settings
 from django_dynamic_fixture.fixture_algorithms.sequential_fixture import SequentialDataFixture, \
     StaticSequentialDataFixture
 from django_dynamic_fixture.fixture_algorithms.random_fixture import RandomDataFixture
-from six.moves import reload_module
 
 
 class AbstractGlobalSettingsTestCase(TestCase):

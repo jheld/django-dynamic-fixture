@@ -79,10 +79,10 @@ class NewFullFillAttributesWithAutoDataTest(DDFTestCase):
 
     def test_new_fill_string_fields_with_text_type_strings(self):
         instance = self.ddf.new(ModelWithStrings)
-        self.assertTrue(isinstance(instance.string, six.text_type))
-        self.assertTrue(isinstance(instance.text, six.text_type))
-        self.assertTrue(isinstance(instance.slug, six.text_type))
-        self.assertTrue(isinstance(instance.commaseparated, six.text_type))
+        self.assertTrue(isinstance(instance.string, str))
+        self.assertTrue(isinstance(instance.text, str))
+        self.assertTrue(isinstance(instance.slug, str))
+        self.assertTrue(isinstance(instance.commaseparated, str))
 
     def test_new_fill_boolean_fields_with_False_and_None(self):
         instance = self.ddf.new(ModelWithBooleans)
@@ -97,16 +97,16 @@ class NewFullFillAttributesWithAutoDataTest(DDFTestCase):
 
     def test_new_fill_formatted_strings_fields_with_basic_values(self):
         instance = self.ddf.new(ModelWithFieldsWithCustomValidation)
-        self.assertTrue(isinstance(instance.email, six.text_type))
-        self.assertTrue(isinstance(instance.url, six.text_type))
-        self.assertTrue(isinstance(instance.ip, six.text_type))
+        self.assertTrue(isinstance(instance.email, str))
+        self.assertTrue(isinstance(instance.url, str))
+        self.assertTrue(isinstance(instance.ip, str))
         if django_greater_than('1.4'):
-            self.assertTrue(isinstance(instance.ipv6, six.text_type))
+            self.assertTrue(isinstance(instance.ipv6, str))
 
     def test_new_fill_file_fields_with_basic_strings(self):
         instance = self.ddf.new(ModelWithFileFields)
-        self.assertTrue(isinstance(instance.filepath, six.text_type))
-        self.assertTrue(isinstance(instance.file.path, six.text_type))
+        self.assertTrue(isinstance(instance.filepath, str))
+        self.assertTrue(isinstance(instance.file.path, str))
         try:
             import pil
             # just test it if the PIL package is installed
@@ -121,10 +121,7 @@ class NewFullFillAttributesWithAutoDataTest(DDFTestCase):
             self.assertEqual(bytes(instance.binary), bytes(value))
 
             instance = self.ddf.get(ModelWithBinary)
-            if six.PY3:
-                self.assertTrue(isinstance(instance.binary, six.binary_type), msg=type(instance.binary))
-            else:
-                self.assertTrue(isinstance(instance.binary, (six.binary_type, str, unicode)), msg=type(instance.binary))
+            self.assertTrue(isinstance(instance.binary, bytes), msg=type(instance.binary))
 
 
 class NewFullFillAttributesWithDefaultDataTest(DDFTestCase):
@@ -835,20 +832,17 @@ class ExceptionsLayoutMessagesTest(DDFTestCase):
             model_msg = 'django_dynamic_fixture.models_test.ModelForIgnoreList'
             error_msg = 'django_dynamic_fixture_modelforignorelist.required may not be NULL'
             error_msg2 = 'NOT NULL constraint failed: django_dynamic_fixture_modelforignorelist.required'
-            template1 = "('%s', IntegrityError('%s',))" % (model_msg, error_msg)
-            template2 = "('%s', IntegrityError('%s',))" % (model_msg, error_msg2) # py34
-            template3 = "('%s', IntegrityError(u'%s',))" % (model_msg, error_msg) # pypy
-            template4 = "('%s', IntegrityError(u'%s',))" % (model_msg, error_msg2) # pypy
-            self.assertEquals(str(e) in [template1, template2, template3, template4], True, msg=str(e))
-
+            self.assertTrue(model_msg in str(e), msg=str(e))
+            self.assertTrue('IntegrityError' in str(e), msg=str(e))
+            self.assertTrue('NULL' in str(e), msg=str(e))
 
     def test_InvalidConfigurationError(self):
         try:
             self.ddf.new(ModelWithNumbers, integer=lambda x: ''.invalidmethod())
             self.fail()
         except InvalidConfigurationError as e:
-            self.assertTrue('django_dynamic_fixture.models_test.ModelWithNumbers.integer' in str(e))
-            self.assertTrue("AttributeError("'str' object has no attribute 'invalidmethod'"))" in str(e))
+            self.assertTrue('django_dynamic_fixture.models_test.ModelWithNumbers.integer' in str(e), msg=str(e))
+            self.assertTrue('''AttributeError("'str' object has no attribute 'invalidmethod'"))''' in str(e), msg=str(e))
 
     def test_InvalidManyToManyConfigurationError(self):
         try:

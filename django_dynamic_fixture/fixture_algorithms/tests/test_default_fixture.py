@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-import six
 import uuid
 
 from django.db import models
@@ -89,7 +88,7 @@ if django_greater_than('1.8'):
             def test_arrayfield_char_config(self):
                 data = self.fixture.generate_data(ArrayField(models.CharField()))
                 self.assertTrue(isinstance(data, list))
-                self.assertTrue(isinstance(data[0], six.text_type))
+                self.assertTrue(isinstance(data[0], str))
 
             def test_arrayfield_datetime_config(self):
                 data = self.fixture.generate_data(ArrayField(models.DateTimeField()))
@@ -99,7 +98,7 @@ if django_greater_than('1.8'):
             def test_arrayfield_email_config(self):
                 data = self.fixture.generate_data(ArrayField(models.EmailField(max_length=100)))
                 self.assertTrue(isinstance(data, list))
-                self.assertTrue(isinstance(data[0], six.text_type))
+                self.assertTrue(isinstance(data[0], str))
 
 
         class PostgresSequentialDataFixtureTestCase(TestCase, PostgresDataFixtureTestMixin):

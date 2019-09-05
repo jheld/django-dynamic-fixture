@@ -5,8 +5,6 @@ import random
 import string
 import uuid
 
-import six
-
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -31,7 +29,7 @@ from django_dynamic_fixture.ddf import DataFixture
 class BaseDataFixture(DataFixture):
     # Django >= 1.6
     def binaryfield_config(self, field, key):
-        return six.b('\x00\x46\xFE')
+        return b'\x00\x46\xFE'
 
     # Django >= 1.8
     def uuidfield_config(self, field, key):

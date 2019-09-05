@@ -8,9 +8,6 @@ import string
 import struct
 from warnings import warn
 
-import six
-from six.moves import xrange
-
 from django.core.exceptions import ImproperlyConfigured
 
 try:
@@ -50,12 +47,12 @@ class UniqueRandomDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFi
         return result
 
     def random_string(self, field, key, n=None):
-        counter = six.text_type(self.get_counter(field, key))
+        counter = str(self.get_counter(field, key))
         length = n or self.DEFAULT_LENGTH
         result = counter
-        result += six.text_type('').join(
+        result += ''.join(
             random.choice(string.ascii_letters)
-            for _ in xrange(length - len(counter))
+            for _ in range(length - len(counter))
         )
         return result
 
@@ -152,10 +149,10 @@ class UniqueRandomDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFi
 
     # FORMATTED STRINGS
     def emailfield_config(self, field, key):
-        return six.text_type('a%s@dynamicfixture.com') % self.random_string(field, key)
+        return 'a%s@dynamicfixture.com' % self.random_string(field, key)
 
     def urlfield_config(self, field, key):
-        return six.text_type('http://dynamicfixture%s.com') % self.random_string(field, key)
+        return 'http://dynamicfixture%s.com' % self.random_string(field, key)
 
     # Deprecated in Django >= 1.7
     def ipaddressfield_config(self, field, key):
@@ -163,10 +160,10 @@ class UniqueRandomDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFi
 
         integer = self.random_integer(field, key, signed=False)
         integer %= MAX_IP
-        return six.text_type(socket.inet_ntoa(struct.pack('!L', integer)))
+        return str(socket.inet_ntoa(struct.pack('!L', integer)))
 
     def xmlfield_config(self, field, key):
-        return six.text_type('<a>%s</a>') % self.random_string(field, key)
+        return '<a>%s</a>' % self.random_string(field, key)
 
     # FILES
     def filepathfield_config(self, field, key):

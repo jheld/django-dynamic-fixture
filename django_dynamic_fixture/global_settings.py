@@ -17,7 +17,6 @@ try:
     from importlib import import_module
 except ImportError:
     from django.utils.importlib import import_module
-import six
 
 from django_dynamic_fixture.fixture_algorithms.sequential_fixture import SequentialDataFixture, StaticSequentialDataFixture, GlobalSequentialDataFixture
 from django_dynamic_fixture.fixture_algorithms.random_fixture import RandomDataFixture
@@ -34,7 +33,7 @@ def get_boolean_config(config_name, default=False):
             raise DDFImproperlyConfigured()
         return getattr(settings, config_name) if hasattr(settings, config_name) else default
     except DDFImproperlyConfigured:
-        six.reraise(DDFImproperlyConfigured, DDFImproperlyConfigured("%s (%s) must be True or False." % (config_name, getattr(settings, config_name))), sys.exc_info()[2])
+        raise DDFImproperlyConfigured("%s (%s) must be True or False." % (config_name, getattr(settings, config_name)))
 
 
 # DDF_DEFAULT_DATA_FIXTURE default = 'sequential'
@@ -56,21 +55,21 @@ try:
     else:
         DDF_DEFAULT_DATA_FIXTURE = INTERNAL_DATA_FIXTURES['sequential']
 except:
-    six.reraise(DDFImproperlyConfigured, DDFImproperlyConfigured("DDF_DEFAULT_DATA_FIXTURE (%s) must be 'sequential', 'static_sequential', 'global_sequential', 'random' or 'path.to.CustomDataFixtureClass'." % settings.DDF_DEFAULT_DATA_FIXTURE), sys.exc_info()[2])
+    raise DDFImproperlyConfigured("DDF_DEFAULT_DATA_FIXTURE (%s) must be 'sequential', 'static_sequential', 'global_sequential', 'random' or 'path.to.CustomDataFixtureClass'." % settings.DDF_DEFAULT_DATA_FIXTURE)
 
 
 # DDF_IGNORE_FIELDS default = []
 try:
     DDF_IGNORE_FIELDS = list(settings.DDF_IGNORE_FIELDS) if hasattr(settings, 'DDF_IGNORE_FIELDS') else []
 except Exception as e:
-    six.reraise(DDFImproperlyConfigured, DDFImproperlyConfigured("DDF_IGNORE_FIELDS (%s) must be a list of strings" % settings.DDF_IGNORE_FIELDS), sys.exc_info()[2])
+    raise DDFImproperlyConfigured("DDF_IGNORE_FIELDS (%s) must be a list of strings" % settings.DDF_IGNORE_FIELDS)
 
 
 # DDF_NUMBER_OF_LAPS default = 1
 try:
     DDF_NUMBER_OF_LAPS = int(settings.DDF_NUMBER_OF_LAPS) if hasattr(settings, 'DDF_NUMBER_OF_LAPS') else 1
 except Exception as e:
-    six.reraise(DDFImproperlyConfigured, DDFImproperlyConfigured("DDF_NUMBER_OF_LAPS (%s) must be a integer number." % settings.DDF_NUMBER_OF_LAPS), sys.exc_info()[2])
+    raise DDFImproperlyConfigured("DDF_NUMBER_OF_LAPS (%s) must be a integer number." % settings.DDF_NUMBER_OF_LAPS)
 
 
 # DDF_FIELD_FIXTURES default = {}
@@ -78,7 +77,7 @@ try:
     DDF_FIELD_FIXTURES = dict(settings.DDF_FIELD_FIXTURES) if hasattr(settings, 'DDF_FIELD_FIXTURES') else {}
     DDF_DEFAULT_DATA_FIXTURE.plugins = DDF_FIELD_FIXTURES
 except Exception as e:
-    six.reraise(DDFImproperlyConfigured, DDFImproperlyConfigured("DDF_FIELD_FIXTURES (%s) must be a dict." % settings.DDF_FIELD_FIXTURES), sys.exc_info()[2])
+    raise DDFImproperlyConfigured("DDF_FIELD_FIXTURES (%s) must be a dict." % settings.DDF_FIELD_FIXTURES)
 
 
 

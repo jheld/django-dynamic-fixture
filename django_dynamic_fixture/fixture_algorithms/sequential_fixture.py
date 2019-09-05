@@ -3,8 +3,6 @@ from datetime import datetime, date, timedelta
 from decimal import Decimal
 import threading
 
-import six
-
 from django.core.exceptions import ImproperlyConfigured
 
 try:
@@ -91,10 +89,11 @@ class SequentialDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFixt
         data = self.get_value(field, key)
         if field.max_length:
             max_value = (10 ** field.max_length) - 1
-            data = six.text_type(data % max_value)
+            print(data, type(data))
+            data = str(data % max_value)
             data = data[:field.max_length]
         else:
-            data = six.text_type(data)
+            data = str(data)
         return data
 
     def textfield_config(self, field, key):
@@ -128,10 +127,10 @@ class SequentialDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFixt
 
     # FORMATTED STRINGS
     def emailfield_config(self, field, key):
-        return six.text_type('a%s@dynamicfixture.com') % self.get_value(field, key)
+        return 'a%s@dynamicfixture.com' % self.get_value(field, key)
 
     def urlfield_config(self, field, key):
-        return six.text_type('http://dynamicfixture%s.com') % self.get_value(field, key)
+        return 'http://dynamicfixture%s.com' % self.get_value(field, key)
 
     # Deprecated in Django >= 1.7
     def ipaddressfield_config(self, field, key):
@@ -141,20 +140,20 @@ class SequentialDataFixture(BaseDataFixture, GeoDjangoFixtureMixin, PostgresFixt
         b = '1'
         c = '1'
         d = data % 256
-        return six.text_type('%s.%s.%s.%s') % (a, b, c, str(d))
+        return '%s.%s.%s.%s' % (a, b, c, str(d))
 
     def xmlfield_config(self, field, key):
-        return six.text_type('<a>%s</a>') % self.get_value(field, key)
+        return '<a>%s</a>' % self.get_value(field, key)
 
     # FILES
     def filepathfield_config(self, field, key):
-        return six.text_type(self.get_value(field, key))
+        return str(self.get_value(field, key))
 
     def filefield_config(self, field, key):
-        return six.text_type(self.get_value(field, key))
+        return str(self.get_value(field, key))
 
     def imagefield_config(self, field, key):
-        return six.text_type(self.get_value(field, key))
+        return str(self.get_value(field, key))
 
 
 class GlobalSequentialDataFixture(SequentialDataFixture):
